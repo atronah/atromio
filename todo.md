@@ -21,3 +21,4 @@ To read
 
 - [The Flask Mega-Tutorial, Part IV: Database](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database)/
 [Мега-Учебник Flask, Часть 4: База данных](https://habrahabr.ru/post/196810/)
+- [SQL naming conventions](https://launchbylunch.com/posts/2014/Feb/16/sql-naming-conventions/)
