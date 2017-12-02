@@ -5,6 +5,19 @@ from .meta.base import Base
 from .meta.types import Money
 
 
+class Transfer(Base):
+    __tablename__ = 'transfer'
+
+    id = Column(Integer, primary_key=True)
+    description = Column(String(255))
+    committed_at = Column(DateTime, nullable=False)
+    amount = Column(Money, nullable=False)
+    source_id = Column(Integer, ForeignKey('account.id'))
+    source = relationship('Account', foreign_keys=[source_id])
+    destination_id = Column(Integer, ForeignKey('account.id'))
+    destination = relationship('Account', foreign_keys=[destination_id], back_populates='incomes')
+
+
 class Account(Base):
     __tablename__ = 'account'
 
@@ -13,17 +26,7 @@ class Account(Base):
     description = Column(String(255))
 
 
-class Transfer(Base):
-    __tablename__ = 'transfer'
 
-    id = Column(Integer, primary_key=True)
-    description = Column(String(255))
-    committed_at = Column(DateTime, nullable=False)
-    amount = Column(Money, nullable=False)
-    source_id = Column(Integer, ForeignKey(Account.id))
-    source = relationship(Account, foreign_keys=[source_id])
-    destination_id = Column(Integer, ForeignKey(Account.id))
-    destination = relationship(Account, foreign_keys=[destination_id])
 
 
 class AccountBalance(Base):
