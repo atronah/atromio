@@ -25,6 +25,9 @@ class Account(Base):
     name = Column(String(32), nullable=False)
     description = Column(String(255))
 
+    incomes = relationship(Transfer, back_populates='destination',
+                           foreign_keys=[Transfer.destination_id])
+
 
 
 
