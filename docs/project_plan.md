@@ -1,20 +1,27 @@
 Stage 0. Core
 -------------
 
-Adding following entities: 
+Entities:
+- `account`
+- `transfer` - money transaction (word "transaction" is reserved in most dbms) between two accounts (one of them can be none/unknown).
+- `account_balance` - account balance fixations
 
-- `account` which is supported following operations:
-	- `create(name, description = none)` - creates new account with passed name and description.
-	- `get_balance(datetime)` - returns account balance on passed date 
-	- `confirm_balance(datetime)` - avoids simple transactions (without parallel correction) before confirmation.
-	- `add_transaction(amount, description, datetime = now, other_account = none)`  - 
-	adds transaction between this account and `other_account`. Sign of amount determines direction of transaction.
-- `transaction`
-	- `create(from, to, amount, description, datetime = now)` - creates new transaction between two accounts: `from` and `to`
-	- `delete(transaction)`
-	
 
-All operations with transactions must check date of last balance confirmation for both passed accounts.
+Supported API:
+
+- `create_account(name, description = None)` returns `Account` instance
+- `get_accounts()` returns list of `Account` instances
+- `add_transfer(from_account_id, to_account_id, amount, description, committed_at=None)` returns `Transfer`
+- `get_transfers(account_id, from_datetime=None, to_datetime=None)` returns list of `Transfer` instances
+- `add_purchase(account_id, amount, description, purchased_at=None)` returns `Transfer`
+- `get_purchases(account_id)` returns list of `Transfer` instances
+- `add_income(account_id, amount, description, received_at=None)` returns `Transfer`
+- `get_incomes(account_id)` - returns list of `Transfer` instances
+- `fix_balance(account_id, amount, fixed_at=None)` returns `Account_Balance`
+- `get_balance(account_id, at_datetime)` - returns account balance at passed date and time.
+
+
+All operations with transfers must check date of last balance confirmation for both passed accounts.
 If new transaction has date less than the date of last balance confirmation of one of account, additional correction transaction must be created to save the resulting balance unchanged (and this correction transaction must contain reference to source transaction). 
 
 
