@@ -19,3 +19,26 @@ def _default_utcnow(element, compiler, **kw):
     return "utcnow()"
     
 
+@compiles(utcnow, 'sqlite')
+def _sqlite_utcnow(element, compiler, **kw):
+    """SQLite-specific compilation handler."""
+    return "datetime('now', 'utc')"
+
+
+@event.listens_for(Table, "after_parent_attach")
+def timestamp_cols(table, metadata):
+    from .base import Base
+
+    if metadata is Base.metadata:
+        table.append_column(
+            Column('created_at',
+                        DateTime(timezone=True),
+                        nullable=False, default=utcnow())
+        )
+        table.append_column(
+            Column('updated_at',
+                        DateTime(timezone=True),
+                        nullable=False,
+                        default=utcnow(), onupdate=utcnow())
+        )
+
