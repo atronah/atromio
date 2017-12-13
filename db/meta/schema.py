@@ -27,9 +27,9 @@ def _sqlite_utcnow(element, compiler, **kw):
 
 @event.listens_for(Table, "after_parent_attach")
 def timestamp_cols(table, metadata):
-    from .base import Base
+    from .base import DatabaseModel
 
-    if metadata is Base.metadata:
+    if metadata is DatabaseModel.metadata:
         table.append_column(
             Column('created_at',
                         DateTime(timezone=True),

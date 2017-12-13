@@ -1,11 +1,11 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
-from .meta.base import Base
+from .meta.base import DatabaseModel
 from .meta.types import Money
 
 
-class Transfer(Base):
+class Transfer(DatabaseModel):
     __tablename__ = 'transfer'
 
     id = Column(Integer, primary_key=True)
@@ -18,7 +18,7 @@ class Transfer(Base):
     destination = relationship('Account', foreign_keys=[destination_id], back_populates='incomes')
 
 
-class Account(Base):
+class Account(DatabaseModel):
     __tablename__ = 'account'
 
     id = Column(Integer, primary_key=True)
@@ -30,9 +30,7 @@ class Account(Base):
 
 
 
-
-
-class AccountBalance(Base):
+class AccountBalance(DatabaseModel):
     __tablename__ = 'account_balance'
 
     id = Column(Integer, primary_key=True)
