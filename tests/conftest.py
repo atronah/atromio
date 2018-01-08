@@ -6,6 +6,6 @@ from db.meta.base import DatabaseModel
 
 @pytest.fixture(scope="session")
 def setup_engine():
-    engine = setup_from_file('../atromio.ini', 'test.')
+    engine = setup_from_file('dev.ini', 'test.')
     DatabaseModel.metadata.create_all(engine)
     return engine
