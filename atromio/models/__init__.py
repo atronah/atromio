@@ -16,9 +16,13 @@ def get_engine(settings, prefix='sqlalchemy.'):
     return engine_from_config(settings, prefix)
 
 
-def get_session_factory(engine):
+def get_session_factory(engine, transaction_manager=None):
     factory = sessionmaker()
     factory.configure(bind=engine)
+    if transaction_manager:
+        # register the factory with the zope transaction manager
+        # all sessions created from this will be hooked up
+        zope.sqlalchemy.register(factory, transaction_manager=transaction_manager)
     return factory
 
 
@@ -44,9 +48,11 @@ def get_tm_session(session_factory, transaction_manager):
 
     """
     dbsession = session_factory()
-    zope.sqlalchemy.register(
-        dbsession, transaction_manager=transaction_manager)
+    # register the session with the zope transaction manager
+    zope.sqlalchemy.register(dbsession, transaction_manager=transaction_manager)
     return dbsession
+
+
 
 
 def includeme(config):
