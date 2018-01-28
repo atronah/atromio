@@ -4,6 +4,8 @@ import pytest
 from pyramid import testing
 
 
+
+
 def dummy_request(dbsession):
     return testing.DummyRequest(dbsession=dbsession)
 
@@ -46,9 +48,8 @@ def setup_structure(setup_database):
 @pytest.fixture(scope='function')
 def init_data(setup_tm_session, setup_structure):
     session = setup_tm_session
-    from .models import Account
-    account = Account(name='cash')
-    session.add(account)
+    from .core import account
+    account.add_account(session, 'cash')
 
     yield session
 
@@ -67,3 +68,16 @@ def test_failing_view(setup_tm_session):
     from .views.default import accounts_view
     info = accounts_view(dummy_request(session))
     assert info.status_int == 500
+
+
+def test_account_adding(init_data):
+    session = init_data
+    from .core import account
+    from .models import Account
+
+    assert account.add_account(session, 'test') == 2
+    assert len(session.query(Account.name).all()) == 2
+
+
+
+
