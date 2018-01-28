@@ -16,19 +16,18 @@ def setup_database():
 
     from .models import get_engine, get_session_factory
     engine = get_engine(settings)
-    session_factory = get_session_factory(engine)
+    tm_session_factory = get_session_factory(engine, transaction.manager)
 
-    yield engine, session_factory
+    yield engine, tm_session_factory
 
     testing.tearDown()
     transaction.abort()
 
 
 @pytest.fixture(scope='module')
-def setup_session(setup_database):
-    _, session_factory = setup_database
-    from .models import get_tm_session
-    session = get_tm_session(session_factory, transaction.manager)
+def setup_tm_session(setup_database):
+    _, tm_session_factory = setup_database
+    session = tm_session_factory()
 
     yield session
 
@@ -45,8 +44,8 @@ def setup_structure(setup_database):
 
 
 @pytest.fixture(scope='function')
-def init_data(setup_session, setup_structure):
-    session = setup_session
+def init_data(setup_tm_session, setup_structure):
+    session = setup_tm_session
     from .models import Account
     account = Account(name='cash')
     session.add(account)
@@ -63,8 +62,8 @@ def test_passing_view(init_data):
     assert 'cash' in info['accounts']
 
 
-def test_failing_view(setup_session):
-    session = setup_session
+def test_failing_view(setup_tm_session):
+    session = setup_tm_session
     from .views.default import accounts_view
     info = accounts_view(dummy_request(session))
     assert info.status_int == 500
