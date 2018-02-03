@@ -9,3 +9,8 @@ def add_account(session, name):
         session.add(account)
         session.flush()
         return account.id
+
+
+def accounts(session):
+    with transaction.manager:
+        return session.query(Account).all()
