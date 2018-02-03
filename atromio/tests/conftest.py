@@ -2,6 +2,8 @@ import pytest
 import transaction
 from pyramid import testing
 
+from atromio.models import Account
+
 
 @pytest.fixture(scope='module')
 def setup_database():
@@ -38,12 +40,15 @@ def setup_tm_session(init_structure):
     yield session
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def init_data(setup_tm_session):
     session = setup_tm_session
-    from ..core import account
-    account.add_account(session, 'cash')
-    account.add_account(session, 'bank')
-    account.add_account(session, 'transport')
+    session.add(Account(name='cash'))
+    session.add(Account(name='bank'))
+    session.add(Account(name='transport'))
+    session.flush()
 
     yield session
+
+    session.query(Account).delete()
+    session.flush()
