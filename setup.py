@@ -2,11 +2,22 @@ import os
 
 from setuptools import setup, find_packages
 
-here = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(here, 'README.md')) as f:
-    README = f.read()
-with open(os.path.join(here, 'CHANGES.txt')) as f:
-    CHANGES = f.read()
+README = """
+atromio
+=======
+
+Getting Started
+---------------
+
+- :code:`cd atromio` - change directory into your newly created project.
+- :code:`python3 -m venv env` - create a Python virtual environment.
+- :code:`env/bin/activate` - activate virtual enviroment.
+- :code:`env/bin/pip install --upgrade pip setuptools` - upgrade packaging tools.
+- :code:`env/bin/pip install -e ".[testing]"` - install the project in editable mode with its testing requirements.
+- :code:`env/bin/initialize_atromio_db development.ini` - configure the database.
+- :code:`env/bin/pytest` - run your project's tests.
+- :code:`env/bin/pserve development.ini` - run your project.
+"""
 
 requires = [
     'plaster_pastedeploy',
@@ -31,7 +42,7 @@ setup(
     name='atromio',
     version='0.0',
     description='atromio',
-    long_description=README + '\n\n' + CHANGES,
+    long_description=README,
     classifiers=[
         'Programming Language :: Python',
         'Framework :: Pyramid',
