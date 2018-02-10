@@ -32,6 +32,17 @@ stack of technologies
     - [pytest] for testing, because it easy to write tests
 - SQLite as main dbms (but not the only one in the feature), because it very lightweight.
 
+
+Getting Started
+===============
+
+- `python3 -m venv env` - create a Python virtual environment.
+- `env/bin/activate` - activate virtual enviroment.
+- `env/bin/pip install --upgrade pip setuptools` - upgrade packaging tools.
+- i`env/bin/pip install -e ".[testing]"` - install the project in editable mode with its testing requirements.
+- `env/bin/initialize_atromio_db development.ini` - configure the database.
+- `env/bin/pytest` - run your project's tests.
+- `env/bin/pserve development.ini` - run your project.
  
  
 [sqlalchemy]: http://www.sqlalchemy.org/
