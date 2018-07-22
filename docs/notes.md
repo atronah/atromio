@@ -1,0 +1,2 @@
+- [Bookkeeping](articles/bookkeeping_from_wiki.pdf) ([source](https://en.m.wikipedia.org/wiki/Bookkeeping))
+- [Double-entry accounting in a Relational Database](articles/double-entry_accounting_in_a_realtional_db.pdf) ([source](https://medium.com/@RobertKhou/double-entry-accounting-in-a-relational-database-2b7838a5d7f8))
