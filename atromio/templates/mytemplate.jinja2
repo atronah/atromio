@@ -9,10 +9,16 @@
     {% for acc in accounts %}
         <li>{{ acc.id }}: {{ acc.name }}
             <form action="/add_transfer" method="POST">
-                <input type="number" name="amount" />
+                Add income: <input type="number" name="amount" />
                 <input type="hidden" name="target_account_id" value="{{ acc.id }}" />
                 at: <input class="default_today" type="date" name="committed_at" />
                 <input type="submit" value="+">
+            </form>
+            <form action="/add_real_balance" method="POST">
+                Correct balance: <input type="number" name="amount" />
+                <input type="hidden" name="account_id" value="{{ acc.id }}" />
+                at: <input class="default_today" type="date" name="confirmed_at" />
+                <input type="submit" value="confirm">
             </form>
         </li>
         <ul>
