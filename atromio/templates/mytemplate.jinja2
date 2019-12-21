@@ -11,7 +11,7 @@
             <form action="/add_transfer" method="POST">
                 <input type="number" name="amount" />
                 <input type="hidden" name="target_account_id" value="{{ acc.id }}" />
-                at: <input class="committed_at" type="date" name="committed_at" />
+                at: <input class="default_today" type="date" name="committed_at" />
                 <input type="submit" value="+">
             </form>
         </li>
@@ -37,7 +37,7 @@
                             {% endif %}
                         {% endfor %}
                     </select>
-                    at: <input class="committed_at" type="date" name="committed_at" />
+                    at: <input class="default_today" type="date" name="committed_at" />
                     <input type="submit" value="submit" />
                 </form>
             </li>
