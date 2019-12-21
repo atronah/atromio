@@ -1,5 +1,7 @@
+from datetime import datetime
+
 from sqlalchemy import Column, Integer, String, Index, select, func
-from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy.orm import relationship, column_property
 
 from .meta import Base
@@ -18,10 +20,12 @@ class Account(Base):
                              lazy='dynamic',
                              order_by='desc(Transfer.committed_at)')
 
-    @hybrid_property
-    def balance(self):
-        incomes = sum((t.amount for t in self.incomes.all()))
-        outcomes = sum((t.amount for t in self.outcomes.all()))
+    @hybrid_method
+    def balance(self, at_datetime=None):
+        if at_datetime is None:
+            at_datetime = datetime.now()
+        incomes = sum((t.amount for t in self.incomes.filter(Transfer.committed_at <= at_datetime)))
+        outcomes = sum((t.amount for t in self.outcomes.filter(Transfer.committed_at <= at_datetime)))
         return incomes - outcomes
 
 
