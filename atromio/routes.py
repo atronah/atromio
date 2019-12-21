@@ -3,3 +3,4 @@ def includeme(config):
     config.add_route('home', '/')
     config.add_route('add_account', '/add_account')
     config.add_route('add_transfer', '/add_transfer')
+    config.add_route('add_real_balance', '/add_real_balance')

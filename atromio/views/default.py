@@ -9,7 +9,7 @@ from sqlalchemy.exc import DBAPIError
 from atromio.core.transfer import get_transfers, make_transfer
 from ..models import Account
 
-from ..core.account import add_account, get_accounts
+from ..core.account import add_account, get_accounts, add_real_balance
 
 import logging
 log = logging.getLogger(__name__)
@@ -45,6 +45,16 @@ def add_transfer_view(request):
                       committed_at,
                       source_account_id,
                       target_account_id if target_account_id else None)
+    url = request.route_url('home')
+    return HTTPFound(location=url)
+
+
+@view_config(route_name='add_real_balance', request_method='POST')
+def add_real_balance_view(request):
+    account_id = request.POST.get('account_id')
+    amount = request.POST.get('amount')
+    confirmed_at = datetime.strptime(request.POST.get('confirmed_at'), '%Y-%m-%d')
+    add_real_balance(request.dbsession, account_id, amount, confirmed_at)
     url = request.route_url('home')
     return HTTPFound(location=url)
 
