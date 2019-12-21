@@ -39,7 +39,12 @@ def add_transfer_view(request):
     target_account_id = request.POST.get('target_account_id')
     committed_at = datetime.strptime(request.POST.get('committed_at'), '%Y-%m-%d')
     amount = request.POST.get('amount')
-    make_transfer(request.dbsession, amount, committed_at, source_account_id, target_account_id)
+    if amount:
+        make_transfer(request.dbsession,
+                      amount,
+                      committed_at,
+                      source_account_id,
+                      target_account_id if target_account_id else None)
     url = request.route_url('home')
     return HTTPFound(location=url)
 
