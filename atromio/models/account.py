@@ -10,18 +10,19 @@ class Account(Base):
     __tablename__ = 'account'
     id = Column(Integer, primary_key=True)
     name = Column(String(64))
-    outcomes = relationship('Transfer', foreign_keys='Transfer.source_account_id', backref='source')
-    incomes = relationship('Transfer', foreign_keys='Transfer.target_account_id', backref='target')
+    outcomes = relationship('Transfer', foreign_keys='Transfer.source_account_id', backref='source', lazy='dynamic')
+    incomes = relationship('Transfer', foreign_keys='Transfer.target_account_id', backref='target', lazy='dynamic')
+    transfers = relationship('Transfer',
+                             primaryjoin='or_(Transfer.source_account_id == Account.id, '
+                                         'Transfer.target_account_id == Account.id)',
+                             lazy='dynamic',
+                             order_by='desc(Transfer.committed_at)')
 
     @hybrid_property
     def balance(self):
-        incomes = sum((t.amount for t in self.incomes))
-        outcomes = sum((t.amount for t in self.outcomes))
+        incomes = sum((t.amount for t in self.incomes.all()))
+        outcomes = sum((t.amount for t in self.outcomes.all()))
         return incomes - outcomes
-
-    @hybrid_property
-    def transfers(self):
-        return self.incomes + self.outcomes
 
 
 Index('idx_account_name', Account.name, unique=True)
