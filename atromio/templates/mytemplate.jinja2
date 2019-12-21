@@ -7,7 +7,7 @@
     <h2>Available accounts</h2>
     <ul>
     {% for acc in accounts %}
-        <li>{{ acc.id }}: {{ acc.name }}
+        <li>{{ acc.id }}: {{ acc.name }} ({{  acc.balance }})
             <form action="/add_transfer" method="POST">
                 Add income: <input type="number" name="amount" />
                 <input type="hidden" name="target_account_id" value="{{ acc.id }}" />
