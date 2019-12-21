@@ -10,5 +10,5 @@ def add_account(session, name):
     return account.id
 
 
-def accounts(session):
+def get_accounts(session):
     return [(a.id, a.name) for a in session.query(Account).all()]

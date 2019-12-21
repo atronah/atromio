@@ -1,19 +1,47 @@
+from datetime import datetime
+
+from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
 from pyramid.view import view_config
 
 from sqlalchemy.exc import DBAPIError
 
+from atromio.core.transfer import get_transfers, make_transfer
 from ..models import Account
+
+from ..core.account import add_account, get_accounts
+
+import logging
+log = logging.getLogger(__name__)
 
 
 @view_config(route_name='home', renderer='../templates/mytemplate.jinja2')
 def accounts_view(request):
     try:
-        query = request.dbsession.query(Account.name)
-        name_list = [a.name for a in query.all()]
+        s = request.dbsession
+        accounts_list = [(acc_id, name, get_transfers(s, acc_id)) for (acc_id, name) in get_accounts(s)]
     except DBAPIError:
         return Response(db_err_msg, content_type='text/plain', status=500)
-    return {'accounts': name_list, 'project': 'atromio'}
+    return {'accounts': accounts_list, 'project': 'atromio'}
+
+
+@view_config(route_name='add_account', request_method='POST')
+def add_account_view(request):
+    account_name = request.POST.get('account_name')
+    add_account(request.dbsession, account_name)
+    url = request.route_url('home')
+    return HTTPFound(location=url)
+
+
+@view_config(route_name='add_transfer', request_method='POST')
+def add_transfer_view(request):
+    source_account_id = request.POST.get('source_account_id')
+    target_account_id = request.POST.get('target_account_id')
+    committed_at = datetime.strptime(request.POST.get('committed_at'), '%Y-%m-%d')
+    amount = request.POST.get('amount')
+    make_transfer(request.dbsession, amount, committed_at, source_account_id, target_account_id)
+    url = request.route_url('home')
+    return HTTPFound(location=url)
 
 
 db_err_msg = """\
