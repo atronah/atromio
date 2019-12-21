@@ -62,8 +62,19 @@
     <script src="//oss.maxcdn.com/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js" integrity="sha384-s1ITto93iSMDxlp/79qhWHi+LsIi9Gx6yL+cOKDuymvihkfol83TYbLbOw+W/wv4" crossorigin="anonymous"></script>
     <script>
         let today = new Date();
-        let date_inputs = window.document.querySelectorAll(".default_today");
-        date_inputs.forEach(item => item.value = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + today.getDate());
+
+        let date_inputs = window.document.querySelectorAll(".default_date");
+        let year = today.getFullYear();
+        let month = today.getMonth() + 1;
+        let day = today.getDate();
+        date_inputs.forEach(item => item.value =  year + "-" + `0${month}`.slice(-2) + "-" + `0${day}`.slice(-2));
+
+        let hour = today.getHours();
+        let min = today.getMinutes();
+        let sec = today.getSeconds();
+
+        let time_inputs = window.document.querySelectorAll(".default_time");
+        time_inputs.forEach(item => item.value = `0${hour}`.slice(-2) + ":" + `0${min}`.slice(-2) + ":" + `0${sec}`.slice(-2));
      </script>
   </body>
 </html>

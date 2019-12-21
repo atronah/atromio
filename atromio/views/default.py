@@ -1,17 +1,14 @@
+import logging
 from datetime import datetime
 
 from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
 from pyramid.view import view_config
-
 from sqlalchemy.exc import DBAPIError
 
-from atromio.core.transfer import get_transfers, make_transfer
-from ..models import Account
-
+from atromio.core.transfer import make_transfer
 from ..core.account import add_account, get_accounts, add_real_balance
 
-import logging
 log = logging.getLogger(__name__)
 
 
@@ -37,8 +34,10 @@ def add_account_view(request):
 def add_transfer_view(request):
     source_account_id = request.POST.get('source_account_id')
     target_account_id = request.POST.get('target_account_id')
-    committed_at = datetime.strptime(request.POST.get('committed_at'), '%Y-%m-%d')
-    amount = request.POST.get('amount')
+    committed_date = datetime.strptime(request.POST.get('committed_date'), '%Y-%m-%d').date()
+    committed_time = datetime.strptime(request.POST.get('committed_time'), '%H:%M:%S').time()
+    committed_at = datetime.combine(committed_date, committed_time)
+    amount = int(request.POST.get('amount'))
     if amount:
         make_transfer(request.dbsession,
                       amount,
@@ -52,8 +51,10 @@ def add_transfer_view(request):
 @view_config(route_name='add_real_balance', request_method='POST')
 def add_real_balance_view(request):
     account_id = request.POST.get('account_id')
-    amount = request.POST.get('amount')
-    confirmed_at = datetime.strptime(request.POST.get('confirmed_at'), '%Y-%m-%d')
+    amount = int(request.POST.get('amount'))
+    confirmed_date = datetime.strptime(request.POST.get('confirmed_date'), '%Y-%m-%d').date()
+    confirmed_time = datetime.strptime(request.POST.get('confirmed_time'), '%H:%M:%S').time()
+    confirmed_at = datetime.combine(confirmed_date, confirmed_time)
     add_real_balance(request.dbsession, account_id, amount, confirmed_at)
     url = request.route_url('home')
     return HTTPFound(location=url)

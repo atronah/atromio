@@ -11,13 +11,15 @@
             <form action="/add_transfer" method="POST">
                 Add income: <input type="number" name="amount" />
                 <input type="hidden" name="target_account_id" value="{{ acc.id }}" />
-                at: <input class="default_today" type="date" name="committed_at" />
+                at: <input class="default_date" type="date" name="committed_date" />
+                <input class="default_time" type="time" name="committed_time" step="any" />
                 <input type="submit" value="+">
             </form>
             <form action="/add_real_balance" method="POST">
                 Correct balance: <input type="number" name="amount" />
                 <input type="hidden" name="account_id" value="{{ acc.id }}" />
-                at: <input class="default_today" type="date" name="confirmed_at" />
+                at: <input class="default_date" type="date" name="confirmed_date" />
+                <input class="default_time" type="time" name="confirmed_time" step="any" />
                 <input type="submit" value="confirm">
             </form>
         </li>
@@ -43,7 +45,8 @@
                             {% endif %}
                         {% endfor %}
                     </select>
-                    at: <input class="default_today" type="date" name="committed_at" />
+                    at: <input class="default_date" type="date" name="committed_date" />
+                    <input class="default_time" type="time" name="committed_time" step="any" />
                     <input type="submit" value="submit" />
                 </form>
             </li>
