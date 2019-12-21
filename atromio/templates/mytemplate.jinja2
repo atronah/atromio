@@ -6,24 +6,38 @@
     <p class="lead">Welcome to <span class="font-normal">{{ project }}</span>, a&nbsp;Pyramid application generated&nbsp;by<br><span class="font-normal">Cookiecutter</span>.</p>
     <h2>Available accounts</h2>
     <ul>
-    {% for acc_id, name, transfers in accounts %}
-        <li>{{ acc_id }}: {{ name }}</li>
+    {% for acc in accounts %}
+        <li>{{ acc.id }}: {{ acc.name }}
+            <form action="/add_transfer" method="POST">
+                <input type="number" name="amount" />
+                <input type="hidden" name="target_account_id" value="{{ acc.id }}" />
+                at: <input id="committed_at" type="date" name="committed_at" />
+                <input type="submit" value="+">
+            </form>
+        </li>
         <ul>
-            {% for _, committed_at, _, amount, target_account_id in transfers %}
-            <li>{{ committed_at }}: {{ amount }} (to: {{ target_account_id }})</li>
+            {% for t in acc.transfers %}
+            <li>{% if t.target_account_id == acc.id %}
+                    +{{ t.amount }} (from: {{ t.source.name }} at: {{ t.committed_at }})
+                {% else %}
+                    -{{ t.amount }} (to: {{ t.target.name }} at: {{ t.committed_at }})
+                {% endif %}
+            </li>
             {% endfor %}
-            <li>Add new transfer
+            <li>Add new outcome
                 <form action="/add_transfer" method="POST">
-                    at: <input type="date" name="committed_at" />
                     amount: <input type="number" name="amount" />
-                    <input type="hidden" name="source_account_id" value="{{ acc_id }}" />
-                    to: <select name="target_account_id">
-                        {% for other_acc_id, other_acc_name, _ in accounts %}
-                            {% if other_acc_id != acc_id %}
-                                <option value="{{ other_acc_id }}">{{ other_acc_name }}</option>
+                    <input type="hidden" name="source_account_id" value="{{ acc.id }}" />
+                    to:
+                    <select name="another_account_id">
+                        <option value="">unknown</option>
+                        {% for target_acc in accounts %}
+                            {% if target_acc.id != acc.id %}
+                                <option value="{{ target_acc.id }}">{{ target_acc.name }}</option>
                             {% endif %}
                         {% endfor %}
                     </select>
+                    at: <input id="committed_at" type="date" name="committed_at" />
                     <input type="submit" value="submit" />
                 </form>
             </li>
