@@ -8,6 +8,7 @@ from pyramid.paster import (
     )
 
 from pyramid.scripts.common import parse_vars
+from sqlalchemy import exists
 
 from ..models.meta import Base
 from ..models import (
@@ -41,5 +42,6 @@ def main(argv=sys.argv):
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
 
-        account = Account(name='cash')
-        dbsession.add(account)
+        if not dbsession.query(exists().where(Account.name == 'cash')).scalar():
+            account = Account(name='cash')
+            dbsession.add(account)
