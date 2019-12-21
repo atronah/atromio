@@ -7,8 +7,8 @@ def add_account(session, name):
     account = Account(name=name)
     session.add(account)
     session.flush()
-    return account.id
+    return account
 
 
 def get_accounts(session):
-    return [(a.id, a.name) for a in session.query(Account).all()]
+    return session.query(Account).all()

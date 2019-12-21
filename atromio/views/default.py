@@ -19,10 +19,10 @@ log = logging.getLogger(__name__)
 def accounts_view(request):
     try:
         s = request.dbsession
-        accounts_list = [(acc_id, name, get_transfers(s, acc_id)) for (acc_id, name) in get_accounts(s)]
+        accounts = get_accounts(s)
     except DBAPIError:
         return Response(db_err_msg, content_type='text/plain', status=500)
-    return {'accounts': accounts_list, 'project': 'atromio'}
+    return {'accounts': accounts, 'project': 'atromio'}
 
 
 @view_config(route_name='add_account', request_method='POST')
