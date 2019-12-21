@@ -7,6 +7,7 @@ import zope.sqlalchemy
 # Base.metadata prior to any initialization routines
 from .account import Account  # flake8: noqa
 from .transfer import Transfer  # flake8: noqa
+from .real_balance import RealBalance  # flake8: noqa
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
