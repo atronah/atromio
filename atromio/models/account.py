@@ -1,8 +1,9 @@
-from sqlalchemy import Column, Integer, String, Index
+from sqlalchemy import Column, Integer, String, Index, select, func
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, column_property
 
-from atromio.models.meta import Base
+from .meta import Base
+from .transfer import Transfer
 
 
 class Account(Base):
@@ -11,6 +12,12 @@ class Account(Base):
     name = Column(String(64))
     outcomes = relationship('Transfer', foreign_keys='Transfer.source_account_id', backref='source')
     incomes = relationship('Transfer', foreign_keys='Transfer.target_account_id', backref='target')
+
+    @hybrid_property
+    def balance(self):
+        incomes = sum((t.amount for t in self.incomes))
+        outcomes = sum((t.amount for t in self.outcomes))
+        return incomes - outcomes
 
     @hybrid_property
     def transfers(self):
