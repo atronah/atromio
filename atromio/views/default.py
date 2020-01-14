@@ -1,12 +1,13 @@
 import logging
 from datetime import datetime
 
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPCreated
 from pyramid.response import Response
-from pyramid.view import view_config
+from pyramid.view import view_config, view_defaults
 from sqlalchemy.exc import DBAPIError
 
 from atromio.core.transfer import make_transfer
+from atromio.routes import AccountsCollection
 from ..core.account import add_account, get_accounts, add_real_balance
 
 log = logging.getLogger(__name__)
@@ -58,6 +59,22 @@ def add_real_balance_view(request):
     add_real_balance(request.dbsession, account_id, amount, confirmed_at)
     url = request.route_url('home')
     return HTTPFound(location=url)
+
+
+@view_defaults(context=AccountsCollection, renderer='json')
+class AccountsCollectionViews(object):
+    @view_config(request_method='POST')
+    def create(self, request):
+        result = request.context.create(request)
+        request.response.status_code = HTTPCreated.code
+        return result
+
+
+@view_config(request_method='GET', renderer='json')
+def default_json_view(request):
+    return request.context
+
+
 
 
 db_err_msg = """\
