@@ -61,7 +61,7 @@ def add_real_balance_view(request):
     return HTTPFound(location=url)
 
 
-@view_defaults(context=AccountsCollection, renderer='json')
+@view_defaults(context=AccountsCollection, renderer='pretty_json')
 class AccountsCollectionViews(object):
     @view_config(request_method='POST')
     def create(self, request):
@@ -70,7 +70,7 @@ class AccountsCollectionViews(object):
         return result
 
 
-@view_config(request_method='GET', renderer='json')
+@view_config(request_method='GET', renderer='pretty_json')
 def default_json_view(request):
     return request.context
 
