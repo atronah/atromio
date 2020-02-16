@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from pyramid.traversal import find_root
 from sqlalchemy import inspect
 
 from atromio.models import Account, Transfer
@@ -8,22 +9,25 @@ from atromio.models import Account, Transfer
 logger = logging.getLogger('atromio')
 
 
-class Resource(object):
+class LocatedAwareResource(object):
+    def __init__(self, name, parent):
+        self.__name__ = name
+        self.__parent__ = parent
+
+
+class Resource(LocatedAwareResource):
     data_class = None
 
-    def __init__(self, resource_id):
-        self.resource_id = resource_id
-
     def retrieve(self, request):
-        logger.debug(f'retrieving resource {self.resource_id}')
+        logger.debug(f'retrieving resource {self.__name__}')
         session = request.dbsession
-        resource_data = session.query(self.data_class).get(self.resource_id)
+        resource_data = session.query(self.data_class).get(self.__name__)
         return resource_data
 
     def __json__(self, request):
         json = {}
         resource_data = self.retrieve(request)
-        logger.debug(f'format resource {self.resource_id} to json')
+        logger.debug(f'format resource {self.__name__} to json')
         for column in inspect(self.data_class).columns:
             key = column.name
             value = getattr(resource_data, key)
@@ -34,13 +38,21 @@ class Resource(object):
         return json
 
 
-class ResourcesCollection(object):
+class ResourcesCollection(LocatedAwareResource):
     resource_class = None
 
-    def __getitem__(self, resource_id):
-        return self.resource_class(resource_id)
+    def __init__(self, name, parent, collection_data=None):
+        self.collection_data = collection_data
+        super().__init__(name, parent)
+
+    def __getitem__(self, name):
+        return self.resource_class(name, self)
 
     def retrieve(self, request):
+        if self.collection_data is not None:
+            logger.debug(f'{self.collection_data}')
+            return self.collection_data
+        logger.debug('loading')
         session = request.dbsession
         collection_data = session.query(self.resource_class.data_class)
         return collection_data
@@ -51,10 +63,10 @@ class ResourcesCollection(object):
         resource_data = self.resource_class.data_class(**params)
         session.add(resource_data)
         session.flush()
-        return self.resource_class(inspect(resource_data).identity)
+        return self.resource_class(inspect(resource_data).identity, self)
 
     def __json__(self, request):
-        return [self.resource_class(inspect(resource_data).identity).__json__(request)
+        return [self.resource_class(inspect(resource_data).identity, self).__json__(request)
                 for resource_data in self.retrieve(request)]
 
 
@@ -69,16 +81,30 @@ class TransferCollection(ResourcesCollection):
 class AccountResource(Resource):
     data_class = Account
 
-    def __getitem__(self, item):
-        return {'transfers': TransferCollection()}[item]
+    def __getitem__(self, name):
+        logger.debug(name)
+        if name == 'transfers':
+            return TransferCollection(name, self, getattr(self.retrieve(find_root(self).request), name))
+        raise KeyError
 
 
 class AccountsCollection(ResourcesCollection):
     resource_class = AccountResource
 
 
+class Root(LocatedAwareResource):
+    def __init__(self, request):
+        self.request = request
+        super().__init__('', None)
+
+    def __getitem__(self, name):
+        return {
+            'accounts': AccountsCollection
+        }.get(name)(name, self)
+
+
 def get_root(request):
-    return {'accounts': AccountsCollection()}
+    return Root(request)
 
 
 '''
