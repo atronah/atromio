@@ -91,7 +91,7 @@ def get_root(request):
     /accounts/:id/transfers[?after=:after_time&before=:before_time]
         GET - returns incomes (deposits) to specified account and outcomes (withdrawals) from it
         POST - adds transfer from specified account to another or backward
-    /account/:id/real_balances
+    /accounts/:id/real_balances
         GET - returns list of real balances (real amounts after checking)
         POST - adds new real balance for the account
 '''
