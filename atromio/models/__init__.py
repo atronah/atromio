@@ -24,6 +24,7 @@ def get_session_factory(engine, transaction_manager=None):
     if transaction_manager:
         # register the factory with the zope transaction manager
         # all sessions created from this will be hooked up
+        # (used for tests)
         zope.sqlalchemy.register(factory, transaction_manager=transaction_manager)
     return factory
 
